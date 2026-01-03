@@ -8,15 +8,11 @@ import { CompleteTodos } from "./components/CompleteTodos.tsx";
 
 export const Todo = () => {
   const [todoText, setTodoText] = useState("");
-  const [incompleteTodos, setIncompleteTodos] = useState([
-    "TODOです1",
-    "TODOです2",
-  ]);
-  const [completeTodos, setCompleteTodos] = useState([
-    "TODOでした1",
-    "TODOでした2",
-  ]);
-  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  const [incompleteTodos, setIncompleteTodos] = useState<string[]>([]);
+  const [completeTodos, setCompleteTodos] = useState<string[]>([]);
+  const onChangeTodoText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTodoText(event.target.value);
+  };
 
   const onClickAdd = () => {
     if (todoText === "") return;
@@ -24,7 +20,7 @@ export const Todo = () => {
     setIncompleteTodos(newTodos);
     setTodoText("");
   };
-  const onClickDelete = (index) => {
+  const onClickDelete = (index: number) => {
     const isConfirmed = window.confirm("本当に削除してよろしいですか?");
     if (!isConfirmed) return;
 
@@ -33,7 +29,7 @@ export const Todo = () => {
     setIncompleteTodos(newTodos);
   };
 
-  const onClickComplete = (index) => {
+  const onClickComplete = (index: number) => {
     const newIncompleteTodos = [...incompleteTodos];
     newIncompleteTodos.splice(index, 1);
 
@@ -42,7 +38,7 @@ export const Todo = () => {
     setCompleteTodos(newCompleteTodos);
   };
 
-  const onClickBack = (index) => {
+  const onClickBack = (index: number) => {
     const newCompleteTodos = [...completeTodos];
     newCompleteTodos.splice(index, 1);
 
@@ -51,18 +47,18 @@ export const Todo = () => {
     setIncompleteTodos(newIncompleteTodos);
   };
 
-  const [editIndex, setEditIndex] = useState(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const totalCount = incompleteTodos.length + completeTodos.length;
   const incompleteCount = incompleteTodos.length;
   const completeCount = completeTodos.length;
 
-  const onClickEdit = (index) => {
+  const onClickEdit = (index: number) => {
     setEditIndex(index);
     setEditText(incompleteTodos[index]);
   };
 
-  const onClickUpdate = (index) => {
+  const onClickUpdate = (index: number) => {
     const newTodos = [...incompleteTodos];
     newTodos[index] = editText;
     setIncompleteTodos(newTodos);
