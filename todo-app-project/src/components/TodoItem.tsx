@@ -1,13 +1,19 @@
+type Todo = {
+  id: number;
+  text: string;
+  isComplete: boolean;
+};
+
 type Props = {
-  todo: string;
+  todo: Todo;
   isEditing: boolean;
   editText: string;
   onChangeEditText: (value: string) => void;
-  onComplete: () => void;
-  onEdit: () => void;
+  onComplete: (id: number) => void;
+  onEdit: (todo: Todo) => void;
   onUpdate: () => void;
   onCancel: () => void;
-  onDelete?: () => void;
+  onDelete?: (id: number) => void;
 };
 
 export const TodoItem = ({
@@ -35,10 +41,14 @@ export const TodoItem = ({
         </>
       ) : (
         <>
-          <input type="checkbox" onClick={onComplete} />
-          <p className="todo-item">{todo}</p>
-          <button onClick={onEdit}>編集</button>
-          <button onClick={onDelete}>削除</button>
+          <input
+            type="checkbox"
+            checked={todo.isComplete}
+            onChange={() => onComplete(todo.id)}
+          />
+          <p className="todo-item">{todo.text}</p>
+          <button onClick={() => onEdit(todo)}>編集</button>
+          <button onClick={() => onDelete?.(todo.id)}>削除</button>
         </>
       )}
     </div>

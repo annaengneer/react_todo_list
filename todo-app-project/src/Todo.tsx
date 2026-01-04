@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 
 import { TodoCount } from "./components/TodoCount.tsx";
@@ -6,63 +6,67 @@ import { TodoAdd } from "./components/TodoAdd.tsx";
 import { IncompleteTodos } from "./components/IncompleteTodos.tsx";
 import { CompleteTodos } from "./components/CompleteTodos.tsx";
 
+type Todo = {
+  id: number;
+  text: string;
+  isComplete: boolean;
+};
 export const Todo = () => {
   const [todoText, setTodoText] = useState("");
-  const [incompleteTodos, setIncompleteTodos] = useState<string[]>([]);
-  const [completeTodos, setCompleteTodos] = useState<string[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const onChangeTodoText = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoText(event.target.value);
   };
 
+  const nextIdRef = useRef(1);
   const onClickAdd = () => {
     if (todoText === "") return;
-    const newTodos = [...incompleteTodos, todoText];
-    setIncompleteTodos(newTodos);
+
+    const newTodos: Todo = {
+      id: nextIdRef.current,
+      text: todoText,
+      isComplete: false,
+    };
+    nextIdRef.current += 1;
+
+    setTodos((prev) => [...prev, newTodos]);
     setTodoText("");
   };
-  const onClickDelete = (index: number) => {
+  const onClickDelete = (id: number) => {
     const isConfirmed = window.confirm("本当に削除してよろしいですか?");
     if (!isConfirmed) return;
-
-    const newTodos = [...incompleteTodos];
-    newTodos.splice(index, 1);
-    setIncompleteTodos(newTodos);
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
-  const onClickComplete = (index: number) => {
-    const newIncompleteTodos = [...incompleteTodos];
-    newIncompleteTodos.splice(index, 1);
-
-    const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
-    setIncompleteTodos(newIncompleteTodos);
-    setCompleteTodos(newCompleteTodos);
+  const onClickComplete = (id: number) => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
+      )
+    );
   };
 
-  const onClickBack = (index: number) => {
-    const newCompleteTodos = [...completeTodos];
-    newCompleteTodos.splice(index, 1);
-
-    const newIncompleteTodos = [...incompleteTodos, completeTodos[index]];
-    setCompleteTodos(newCompleteTodos);
-    setIncompleteTodos(newIncompleteTodos);
-  };
-
-  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editTodoId, setEditTodoId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
-  const totalCount = incompleteTodos.length + completeTodos.length;
-  const incompleteCount = incompleteTodos.length;
-  const completeCount = completeTodos.length;
+  const totalCount = todos.length;
+  const incompleteCount = todos.filter((todo) => !todo.isComplete).length;
+  const completeCount = todos.filter((todo) => todo.isComplete).length;
 
-  const onClickEdit = (index: number) => {
-    setEditIndex(index);
-    setEditText(incompleteTodos[index]);
+  const incompleteTodos = todos.filter((todo) => !todo.isComplete);
+  const completeTodos = todos.filter((todo) => todo.isComplete);
+
+  const onClickEdit = (todo: Todo) => {
+    setEditTodoId(todo.id);
+    setEditText(todo.text);
   };
 
-  const onClickUpdate = (index: number) => {
-    const newTodos = [...incompleteTodos];
-    newTodos[index] = editText;
-    setIncompleteTodos(newTodos);
-    setEditIndex(null);
+  const onClickUpdate = () => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === editTodoId ? { ...todo, text: editText } : todo
+      )
+    );
+    setEditTodoId(null);
     setEditText("");
   };
 
@@ -80,16 +84,16 @@ export const Todo = () => {
       />
       <IncompleteTodos
         todos={incompleteTodos}
-        editIndex={editIndex}
+        editTodoId={editTodoId}
         editText={editText}
         onChangeEditText={setEditText}
         onComplete={onClickComplete}
         onEdit={onClickEdit}
         onUpdate={onClickUpdate}
-        onCancel={() => setEditIndex(null)}
+        onCancel={() => setEditTodoId(null)}
         onDelete={onClickDelete}
       />
-      <CompleteTodos todos={completeTodos} onBack={onClickBack} />
+      <CompleteTodos todos={completeTodos} onBack={onClickComplete} />
     </>
   );
 };

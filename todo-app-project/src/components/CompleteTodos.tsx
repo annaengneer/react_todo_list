@@ -1,6 +1,12 @@
+type Todo = {
+  id: number;
+  text: string;
+  isComplete: boolean;
+};
+
 type Props = {
-  todos: string[];
-  onBack: (index: number) => void;
+  todos: Todo[];
+  onBack: (id: number) => void;
 };
 
 export const CompleteTodos = ({ todos, onBack }: Props) => {
@@ -8,11 +14,11 @@ export const CompleteTodos = ({ todos, onBack }: Props) => {
     <div className="complete-area">
       <p className="title">完了のTODO</p>
       <ul>
-        {todos.map((todo, index) => (
-          <li key={todo}>
+        {todos.map((todo) => (
+          <li key={todo.id}>
             <div className="list-row">
-              <input type="checkbox" checked onClick={() => onBack(index)} />
-              <p className="todo-item">{todo}</p>
+              <input type="checkbox" checked onChange={() => onBack(todo.id)} />
+              <p className="todo-item">{todo.text}</p>
             </div>
           </li>
         ))}

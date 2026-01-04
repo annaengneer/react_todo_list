@@ -1,20 +1,26 @@
-import { TodoItem } from "./ TodoItem.tsx";
+import { TodoItem } from "./TodoItem";
+
+type Todo = {
+  id: number;
+  text: string;
+  isComplete: boolean;
+};
 
 type Props = {
-  todos: string[];
-  editIndex: number | null;
+  todos: Todo[];
+  editTodoId: number | null;
   editText: string;
   onChangeEditText: (value: string) => void;
-  onComplete: (index: number) => void;
-  onEdit: (index: number) => void;
-  onUpdate: (index: number) => void;
+  onComplete: (id: number) => void;
+  onEdit: (todo: Todo) => void;
+  onUpdate: () => void;
   onCancel: () => void;
-  onDelete: (index: number) => void;
+  onDelete: (id: number) => void;
 };
 
 export const IncompleteTodos = ({
   todos,
-  editIndex,
+  editTodoId,
   editText,
   onChangeEditText,
   onComplete,
@@ -27,18 +33,18 @@ export const IncompleteTodos = ({
     <div className="incomplete-area">
       <p className="title">未完了のTODO</p>
       <ul>
-        {todos.map((todo, index) => (
-          <li key={todo}>
+        {todos.map((todo) => (
+          <li key={todo.id}>
             <TodoItem
               todo={todo}
-              isEditing={editIndex === index}
+              isEditing={editTodoId === todo.id}
               editText={editText}
               onChangeEditText={onChangeEditText}
-              onComplete={() => onComplete(index)}
-              onEdit={() => onEdit(index)}
-              onUpdate={() => onUpdate(index)}
+              onComplete={() => onComplete(todo.id)}
+              onEdit={() => onEdit(todo)}
+              onUpdate={onUpdate}
               onCancel={onCancel}
-              onDelete={() => onDelete(index)}
+              onDelete={() => onDelete(todo.id)}
             />
           </li>
         ))}
