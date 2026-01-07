@@ -37,7 +37,7 @@ export const IncompleteTodos = ({
           <li key={todo.id}>
             <TodoItem
               todo={todo}
-              isEditing={editTodoId === todo.id}
+              mode={editTodoId === todo.id ? "editing" : "default"}
               editText={editText}
               onChangeEditText={onChangeEditText}
               onComplete={() => onComplete(todo.id)}

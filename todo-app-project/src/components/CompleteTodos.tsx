@@ -1,3 +1,5 @@
+import { TodoItem } from "./TodoItem";
+
 type Todo = {
   id: number;
   text: string;
@@ -16,10 +18,7 @@ export const CompleteTodos = ({ todos, onBack }: Props) => {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            <div className="list-row">
-              <input type="checkbox" checked onChange={() => onBack(todo.id)} />
-              <p className="todo-item">{todo.text}</p>
-            </div>
+            <TodoItem todo={todo} mode="complete" onComplete={onBack} />
           </li>
         ))}
       </ul>

@@ -4,53 +4,68 @@ type Todo = {
   isComplete: boolean;
 };
 
-type Props = {
+type BaseProps = {
   todo: Todo;
-  isEditing: boolean;
-  editText: string;
-  onChangeEditText: (value: string) => void;
   onComplete: (id: number) => void;
-  onEdit: (todo: Todo) => void;
-  onUpdate: () => void;
-  onCancel: () => void;
   onDelete?: (id: number) => void;
 };
 
-export const TodoItem = ({
-  todo,
-  isEditing,
-  editText,
-  onChangeEditText,
-  onComplete,
-  onEdit,
-  onUpdate,
-  onCancel,
-  onDelete,
-}: Props) => {
+type EditingProps = BaseProps & {
+  mode: "editing";
+  editText: string;
+  onChangeEditText: (value: string) => void;
+  onUpdate: () => void;
+  onCancel: () => void;
+};
+
+type DefaultProps = BaseProps & {
+  mode: "default";
+  onEdit: (todo: Todo) => void;
+};
+type CompleteProps = BaseProps & {
+  mode: "complete";
+};
+
+type Props = EditingProps | DefaultProps | CompleteProps;
+
+export const TodoItem = (props: Props) => {
+  const { todo } = props;
+
+  if (props.mode === "editing") {
+    return (
+      <div className="list-row">
+        <input
+          type="text"
+          value={props.editText}
+          onChange={(e) => props.onChangeEditText(e.target.value)}
+        />
+        <button onClick={props.onUpdate}>保存</button>
+        <button onClick={props.onCancel}>キャンセル</button>
+      </div>
+    );
+  }
+  if (props.mode === "complete") {
+    return (
+      <div className="list-row">
+        <input
+          type="checkbox"
+          checked={todo.isComplete}
+          onChange={() => props.onComplete(todo.id)}
+        />
+        <p className="todo-item">{todo.text}</p>
+      </div>
+    );
+  }
   return (
     <div className="list-row">
-      {isEditing ? (
-        <>
-          <input
-            className="edit-input"
-            value={editText}
-            onChange={(e) => onChangeEditText(e.target.value)}
-          />
-          <button onClick={onUpdate}>保存</button>
-          <button onClick={onCancel}>キャンセル</button>
-        </>
-      ) : (
-        <>
-          <input
-            type="checkbox"
-            checked={todo.isComplete}
-            onChange={() => onComplete(todo.id)}
-          />
-          <p className="todo-item">{todo.text}</p>
-          <button onClick={() => onEdit(todo)}>編集</button>
-          <button onClick={() => onDelete?.(todo.id)}>削除</button>
-        </>
-      )}
+      <input
+        type="checkbox"
+        checked={todo.isComplete}
+        onChange={() => props.onComplete(todo.id)}
+      />
+      <p className="todo-item">{todo.text}</p>
+      <button onClick={() => props.onEdit(todo)}>編集</button>
+      <button onClick={() => props.onDelete?.(todo.id)}>削除</button>
     </div>
   );
 };

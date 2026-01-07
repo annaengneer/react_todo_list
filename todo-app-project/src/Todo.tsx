@@ -38,7 +38,7 @@ export const Todo = () => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
-  const onClickComplete = (id: number) => {
+  const onToggleComplete = (id: number) => {
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
@@ -48,12 +48,13 @@ export const Todo = () => {
 
   const [editTodoId, setEditTodoId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
-  const totalCount = todos.length;
-  const incompleteCount = todos.filter((todo) => !todo.isComplete).length;
-  const completeCount = todos.filter((todo) => todo.isComplete).length;
 
   const incompleteTodos = todos.filter((todo) => !todo.isComplete);
   const completeTodos = todos.filter((todo) => todo.isComplete);
+
+  const totalCount = todos.length;
+  const incompleteCount = incompleteTodos.length;
+  const completeCount = completeTodos.length;
 
   const onClickEdit = (todo: Todo) => {
     setEditTodoId(todo.id);
@@ -87,13 +88,13 @@ export const Todo = () => {
         editTodoId={editTodoId}
         editText={editText}
         onChangeEditText={setEditText}
-        onComplete={onClickComplete}
+        onComplete={onToggleComplete}
         onEdit={onClickEdit}
         onUpdate={onClickUpdate}
         onCancel={() => setEditTodoId(null)}
         onDelete={onClickDelete}
       />
-      <CompleteTodos todos={completeTodos} onBack={onClickComplete} />
+      <CompleteTodos todos={completeTodos} onBack={onToggleComplete} />
     </>
   );
 };
